@@ -1,0 +1,85 @@
+<app-navigation-button [title]="backTitle" [pageName]="backPageName"></app-navigation-button>
+
+<div class="search-user__container">
+
+    <div *ngIf="user" class="user__container">
+      <a href="{{ getProfilePicFullRes(user.profile_image_url!) }}" target="_blank">
+        <img class="avatar" src="{{ getProfilePicFullRes(user.profile_image_url!) }}"/>
+      </a>
+      <p>{{ user.name }}</p>
+      <p>{{ formatUsername() }}</p>
+      <p>{{ formatID() }}</p>
+    </div>
+
+    <form class="form__container">
+        <label for="username"></label>
+        <input
+          type="text"
+          class="home__input--username"
+          id="username"
+          placeholder="Twitter user"
+          #userName
+        />
+    
+        <button
+          class="button"
+          (click)="setUserByUsername(userName.value)"
+        >
+          SEARCH
+        </button>
+    
+      </form>
+
+      <div class="request-buttons">
+
+      <button *ngIf="user"
+        class="button"
+        (click)="getTweets(user.id!)"
+      >
+        GET TWEETS
+      </button>
+
+      <button *ngIf="user"
+        class="button"
+        (click)="getPics(user.id!)"
+      >
+        GET PICS
+      </button>
+
+    </div>
+
+      <div *ngIf="tweetList.length && !mediaList.length" class="tweetlist">
+        <div *ngFor="let tweet of tweetList">
+          <p class="tweet">{{tweet.text}}</p>
+          <hr>
+        </div>
+      
+      </div>
+
+      <button *ngIf="tweetList.length && !mediaList.length"
+        class="button"
+        (click)="getMoreTweets(user.id!, lastTweetID()!)"
+        >
+        LOAD MORE TWEETS
+      </button>
+
+
+      <div *ngIf="mediaList.length" class="medialist">
+        <div *ngFor="let media of mediaList">
+          <a *ngIf="media.type==='photo'" href="{{ getTweetPicFullRes(media.url!) }}" target="_blank">
+            <img class="tweetpic" src="{{media.url}}"/>
+          </a>
+        </div>
+      
+      </div>
+
+      <button *ngIf="mediaList.length"
+      class="button"
+      (click)="getMorePics(user.id!, lastTweetID()!)"
+      >
+      LOAD MORE PICS
+      </button>
+
+
+</div>
+

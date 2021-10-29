@@ -1,0 +1,36 @@
+<app-navigation-button [title]="backTitle" [pageName]="backPageName"></app-navigation-button>
+
+<div class="home__container">
+
+    <p class="score">Score : {{ score }} / {{ counter }}</p>
+  
+    <div *ngIf="subgroup" class="cards__container">
+      <app-card *ngFor="let user of subgroup" [username]="user.username" (answer)="checkAnswer($event)"></app-card>
+    </div>
+
+    <p *ngIf="randomTweet">Who tweeted this?:</p>
+  
+    <div *ngIf="randomTweet" class="tweet__container">
+      <p>{{ randomTweet.text }}</p>
+    </div>
+  
+    <div *ngIf="result" class="result__container">
+      <p *ngIf="rightAnswer === true" class="right">{{result}} - It's {{ selected.name }}</p>
+      <p *ngIf="rightAnswer === false" class="wrong">{{result}} - It's not {{ answer }}</p>
+    </div>
+      
+    <button *ngIf="result && inGame"
+      class="button"
+      (click)="randomize()"
+    >
+      NEXT
+    </button>
+
+    <button *ngIf="!inGame"
+      class="button"
+      (click)="startQuiz()"
+    >
+      START QUIZ
+    </button>
+  
+  </div>

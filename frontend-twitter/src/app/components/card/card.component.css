@@ -1,0 +1,29 @@
+p{
+    color:white;
+    font-size: 20px;
+  }
+
+.card{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-width:5px;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: #1DA1F2;
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+    opacity: 70%;
+  }
+
+  .card:hover{
+    opacity: 100%;
+  }
+
+  .avatar{
+    width: 20vmin;
+    height: 20vmin;
+    margin-bottom: 5px;
+  }

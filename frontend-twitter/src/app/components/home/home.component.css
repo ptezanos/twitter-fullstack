@@ -1,0 +1,37 @@
+* {
+    padding: 0;
+    margin: 0;
+  }
+
+  .home__container {
+    background-color: #14171A;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .button {
+    background-color: #657786;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 0;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 25px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+  }
+  
+  .button:hover {
+    background-color: #1DA1F2;
+    transition: 100ms;
+  }
+
+  

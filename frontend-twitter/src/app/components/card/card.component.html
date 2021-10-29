@@ -1,0 +1,6 @@
+<div *ngIf="user" class="card" (click)="setAnswer()">
+    <img class="avatar" src="{{ getProfilePicFullRes() }}" alt="user-picture" />
+    <p>{{ user.name }}</p>
+    <p>{{ formatUsername() }}</p>
+    <p>{{ formatID() }}</p>
+</div>
