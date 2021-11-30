@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { Tweet, User, MediaObject } from 'src/app/models';
 import { TweetService } from 'src/app/services/tweet.service';
@@ -14,8 +14,15 @@ export class SearchUserComponent implements OnInit {
   tweetList: Tweet[] = [];
   mediaList: MediaObject[] = [];
 
+  noMoreTweets: boolean = false;
+
+  requested: string = "";
+
   backTitle: string = "BACK TO MENU";
   backPageName: string = "";
+
+  gridToggle: boolean = false;
+  tweetpicHeight: number = 200;
 
   constructor(private userService: UserService, private tweetService: TweetService) { }
 
@@ -39,21 +46,27 @@ export class SearchUserComponent implements OnInit {
   }
 
   setUserByUsername(username: string): void {
+    this.requested = "";
+    this.tweetList = [];
+    this.mediaList = [];
+    this.noMoreTweets = false;
     this.userService.getUserByUsername(username).subscribe((user) => {
       if (user) {
         this.user = user;
       }
     });
-    this.tweetList = [];
-    this.mediaList = [];
   }
 
   getTweets(id: string): void {
+    this.requested = "tweets";
+    this.mediaList = [];
+    this.noMoreTweets = false;
     this.tweetService
       .getTweets(id)
       .subscribe((twitterObject) => {
-        this.mediaList = [];
-        this.tweetList = twitterObject.data;
+        if(twitterObject.data){
+          this.tweetList = twitterObject.data;
+        }
       });
   }
 
@@ -61,7 +74,11 @@ export class SearchUserComponent implements OnInit {
     this.tweetService
       .getMoreTweets(id, until_id)
       .subscribe((twitterObject) => {
-        this.tweetList = this.tweetList.concat(twitterObject.data);
+        if(twitterObject.data){
+          this.tweetList = this.tweetList.concat(twitterObject.data);
+        } else {
+          this.noMoreTweets = true;
+        }
       });
   }
 
@@ -71,11 +88,17 @@ export class SearchUserComponent implements OnInit {
 
 
   getPics(id: string): void {
+    this.requested = "pics";
+    this.noMoreTweets = false;
     this.tweetService
       .getTweets(id)
       .subscribe((twitterObject) => {
-        this.tweetList = twitterObject.data;
-        this.mediaList = twitterObject.includes.media;
+        if(twitterObject.data){
+          this.tweetList = twitterObject.data;
+        }
+        if(twitterObject.includes?.media){
+          this.mediaList = twitterObject.includes.media;
+        }
       });
   }
 
@@ -83,9 +106,47 @@ export class SearchUserComponent implements OnInit {
     this.tweetService
       .getMoreTweets(id, until_id)
       .subscribe((twitterObject) => {
-        this.tweetList = this.tweetList.concat(twitterObject.data);
-        this.mediaList = this.mediaList.concat(twitterObject.includes.media);
+        if(twitterObject.data){
+          this.tweetList = this.tweetList.concat(twitterObject.data);
+        } else {
+          this.noMoreTweets = true;
+        }
+        if(twitterObject.includes?.media){
+          this.mediaList = this.mediaList.concat(twitterObject.includes.media);
+        }
       });
+  }
+
+  toggleGrid(): void {
+    this.gridToggle = !this.gridToggle;
+  }
+
+  decreaseHeight(): void {
+    if (this.tweetpicHeight >= 200){
+      this.tweetpicHeight = this.tweetpicHeight - 100;
+    } 
+  }
+
+  increaseHeight(): void {
+    if (this.tweetpicHeight <= 900){
+      this.tweetpicHeight = this.tweetpicHeight + 100;
+    } 
+  }
+
+  @HostListener("window:scroll", ["$event"])
+  onScroll() {
+  //In chrome and some browser scroll is given to body tag
+  let pos = (document.documentElement.scrollTop || document.body.scrollTop) + document.documentElement.offsetHeight;
+  let max = document.documentElement.scrollHeight;
+  // pos/max will give you the distance between scroll bottom and and bottom of screen in percentage.
+   if(pos == max )   {
+   //Do your action here
+    if (this.requested=="tweets"){
+      this.getMoreTweets(this.user.id!, this.lastTweetID()!);
+    } else if (this.requested=="pics"){
+      this.getMorePics(this.user.id!, this.lastTweetID()!);
+    }
+   }
   }
 
 }

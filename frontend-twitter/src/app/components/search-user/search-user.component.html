@@ -1,6 +1,6 @@
 <app-navigation-button [title]="backTitle" [pageName]="backPageName"></app-navigation-button>
 
-<div class="search-user__container">
+<div class="search-user__container" (scroll)="onScroll()">
 
     <div *ngIf="user" class="user__container">
       <a href="{{ getProfilePicFullRes(user.profile_image_url!) }}" target="_blank">
@@ -45,16 +45,37 @@
       >
         GET PICS
       </button>
+
+      <button *ngIf="mediaList.length"
+      class="button"
+      (click)="toggleGrid()"
+      >
+      GRID: {{gridToggle}}
+      </button>
+
+      <button *ngIf="mediaList.length"
+      class="button"
+      (click)="decreaseHeight()"
+      >
+      -
+      </button>
+
+      <button *ngIf="mediaList.length"
+      class="button"
+      (click)="increaseHeight()"
+      >
+      +
+      </button>
     </div>
 
-      <div *ngIf="tweetList.length && !mediaList.length" class="tweetlist">
+      <div *ngIf="tweetList.length && requested=='tweets'" class="tweetlist">
         <div *ngFor="let tweet of tweetList">
           <p class="tweet">{{tweet.text}}</p>
           <hr>
         </div>
       </div>
 
-      <button *ngIf="tweetList.length && !mediaList.length"
+      <button *ngIf="tweetList.length && requested=='tweets'"
         class="button"
         (click)="getMoreTweets(user.id!, lastTweetID()!)"
         >
@@ -62,20 +83,24 @@
       </button>
 
 
-      <div *ngIf="mediaList.length" class="medialist">
+      <div *ngIf="requested=='pics'" class="medialist">
         <div *ngFor="let media of mediaList">
           <a *ngIf="media.type==='photo'" href="{{ getTweetPicFullRes(media.url!) }}" target="_blank">
-            <img class="tweetpic" src="{{media.url}}"/>
+            <img class="tweetpic" [ngClass]="gridToggle ? 'tweetpic-grid' : 'tweetpic-original'" [ngStyle]="{'height.px':tweetpicHeight}" src="{{media.url}}"/>
           </a>
         </div>
       </div>
 
-      <button *ngIf="mediaList.length"
+      <button *ngIf="tweetList.length && requested=='pics'"
       class="button"
       (click)="getMorePics(user.id!, lastTweetID()!)"
       >
       LOAD MORE PICS
       </button>
+
+      <p *ngIf="tweetList.length">Last tweet ID: {{lastTweetID()}}</p>
+      <p *ngIf="noMoreTweets">No more Tweets</p>
+
 
 
 </div>

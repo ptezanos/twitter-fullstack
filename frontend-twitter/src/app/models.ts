@@ -12,7 +12,7 @@ export interface Tweet {
 
 export interface TwitterObject {
     data: Tweet[];
-    includes: IncludesObject;
+    includes?: IncludesObject;
     meta: object;
   }
 

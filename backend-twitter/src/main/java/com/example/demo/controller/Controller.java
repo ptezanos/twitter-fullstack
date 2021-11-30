@@ -89,7 +89,7 @@ public class Controller {
 	
 	public static String getBearerToken() {
 		try {
-			File file = new File("C:/Users/931382/Documents/bearer_token.txt");
+			File file = new File(String.format("C:/Users/%s/Documents/bearer_token.txt", System.getProperty("user.name")));
 			Scanner scanner = new Scanner(file);
 			String BEARER_TOKEN = scanner.nextLine();
 			scanner.close();
