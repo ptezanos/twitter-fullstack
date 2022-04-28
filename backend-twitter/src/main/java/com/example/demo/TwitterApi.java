@@ -25,4 +25,11 @@ public interface TwitterApi {
 	@Headers("Authorization: Bearer {BEARER_TOKEN}")
 	TweetsObject getMoreTweets(@Param("id") String id, @Param("until_id") String until_id, @Param("BEARER_TOKEN") String BEARER_TOKEN);
 	
+	@RequestLine("GET /2/users/{id}/tweets?expansions=attachments.media_keys&media.fields=url&max_results=100&exclude=retweets")
+	@Headers("Authorization: Bearer {BEARER_TOKEN}")
+	TweetsObject getRecentTweetsNoRetweets(@Param("id") String id, @Param("BEARER_TOKEN") String BEARER_TOKEN);
+	
+	@RequestLine("GET /2/users/{id}/tweets?expansions=attachments.media_keys&media.fields=url&until_id={until_id}&max_results=100&exclude=retweets")
+	@Headers("Authorization: Bearer {BEARER_TOKEN}")
+	TweetsObject getMoreTweetsNoRetweets(@Param("id") String id, @Param("until_id") String until_id, @Param("BEARER_TOKEN") String BEARER_TOKEN);
 }

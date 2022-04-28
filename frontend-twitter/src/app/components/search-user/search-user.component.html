@@ -34,14 +34,14 @@
 
       <button *ngIf="user"
         class="button"
-        (click)="getTweets(user.id!)"
+        (click)="getData(user.id!, 'tweets', retweetsToggle)"
       >
         GET TWEETS
       </button>
 
       <button *ngIf="user"
         class="button"
-        (click)="getPics(user.id!)"
+        (click)="getData(user.id!, 'pics', retweetsToggle)"
       >
         GET PICS
       </button>
@@ -66,6 +66,13 @@
       >
       +
       </button>
+
+      <button
+      class="button"
+      (click)="toggleRetweets()"
+      >
+      Retweets included: {{retweetsToggle}}
+      </button>
     </div>
 
       <div *ngIf="tweetList.length && requested=='tweets'" class="tweetlist">
@@ -77,7 +84,7 @@
 
       <button *ngIf="tweetList.length && requested=='tweets'"
         class="button"
-        (click)="getMoreTweets(user.id!, lastTweetID()!)"
+        (click)="getMoreData(user.id!, lastTweetID()!, 'tweets', retweetsToggle)"
         >
         LOAD MORE TWEETS
       </button>
@@ -85,15 +92,18 @@
 
       <div *ngIf="requested=='pics'" class="medialist">
         <div *ngFor="let media of mediaList">
-          <a *ngIf="media.type==='photo'" href="{{ getTweetPicFullRes(media.url!) }}" target="_blank">
-            <img class="tweetpic" [ngClass]="gridToggle ? 'tweetpic-grid' : 'tweetpic-original'" [ngStyle]="{'height.px':tweetpicHeight}" src="{{media.url}}"/>
-          </a>
+          <div class="imagebox">
+            <a *ngIf="media.type==='photo'" href="{{ getTweetPicFullRes(media.url!) }}" target="_blank">
+              <img class="tweetpic" [ngClass]="gridToggle ? 'tweetpic-grid' : 'tweetpic-original'" [ngStyle]="{'height.px':tweetpicHeight}" src="{{media.url}}"/>
+            </a>
+              <p class="picresolution">{{media.resolution}}</p>
+          </div>
         </div>
       </div>
 
       <button *ngIf="tweetList.length && requested=='pics'"
       class="button"
-      (click)="getMorePics(user.id!, lastTweetID()!)"
+      (click)="getMoreData(user.id!, lastTweetID()!, 'pics', retweetsToggle)"
       >
       LOAD MORE PICS
       </button>

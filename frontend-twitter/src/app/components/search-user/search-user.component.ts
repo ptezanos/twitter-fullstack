@@ -24,6 +24,8 @@ export class SearchUserComponent implements OnInit {
   gridToggle: boolean = false;
   tweetpicHeight: number = 200;
 
+  retweetsToggle: boolean = true;
+
   constructor(private userService: UserService, private tweetService: TweetService) { }
 
   ngOnInit(): void {
@@ -34,7 +36,7 @@ export class SearchUserComponent implements OnInit {
   }
 
   getTweetPicFullRes(pic: string): string | undefined{
-    return pic + ":orig";
+    return pic?.replace(".jpg", "?format=jpg&name=orig");
   }
 
   formatUsername(): string | undefined{
@@ -57,68 +59,127 @@ export class SearchUserComponent implements OnInit {
     });
   }
 
-  getTweets(id: string): void {
-    this.requested = "tweets";
-    this.mediaList = [];
+  getData(id: string, requested: string, retweets: boolean): void {
+    this.requested = requested;
     this.noMoreTweets = false;
     this.tweetService
-      .getTweets(id)
+      .getTweets(id, retweets)
       .subscribe((twitterObject) => {
         if(twitterObject.data){
           this.tweetList = twitterObject.data;
         }
+        if (requested === "pics"){
+          if(twitterObject.includes?.media){
+            this.mediaList = twitterObject.includes.media;
+            for(let media of this.mediaList){
+              const img = new Image();
+              img.addEventListener("load", function() {
+                media.resolution = this.naturalWidth + 'x' + this.naturalHeight;
+              });
+              img.src = this.getTweetPicFullRes(media.url!)!;
+            }
+          }
+        }
       });
   }
 
-  getMoreTweets(id: string, until_id: string): void {
+  getMoreData(id: string, until_id: string, requested: string, retweets: boolean): void {
     this.tweetService
-      .getMoreTweets(id, until_id)
+      .getMoreTweets(id, until_id, retweets)
       .subscribe((twitterObject) => {
         if(twitterObject.data){
           this.tweetList = this.tweetList.concat(twitterObject.data);
         } else {
           this.noMoreTweets = true;
         }
+        if(requested === "pics"){
+          if(twitterObject.includes?.media){
+            this.mediaList = this.mediaList.concat(twitterObject.includes.media);
+            for(let media of this.mediaList){
+              const img = new Image();
+              img.addEventListener("load", function() {
+                media.resolution = this.naturalWidth + 'x' + this.naturalHeight;
+              });
+              img.src = this.getTweetPicFullRes(media.url!)!;
+            }
+          }
+        }
       });
   }
+
 
   lastTweetID(){
     return this.tweetList[(this.tweetList.length-1)].id;
   }
 
 
-  getPics(id: string): void {
-    this.requested = "pics";
-    this.noMoreTweets = false;
-    this.tweetService
-      .getTweets(id)
-      .subscribe((twitterObject) => {
-        if(twitterObject.data){
-          this.tweetList = twitterObject.data;
-        }
-        if(twitterObject.includes?.media){
-          this.mediaList = twitterObject.includes.media;
-        }
-      });
-  }
 
-  getMorePics(id: string, until_id: string): void {
-    this.tweetService
-      .getMoreTweets(id, until_id)
-      .subscribe((twitterObject) => {
-        if(twitterObject.data){
-          this.tweetList = this.tweetList.concat(twitterObject.data);
-        } else {
-          this.noMoreTweets = true;
-        }
-        if(twitterObject.includes?.media){
-          this.mediaList = this.mediaList.concat(twitterObject.includes.media);
-        }
-      });
-  }
+  // getTweets(id: string): void {
+  //   this.requested = "tweets";
+  //   this.noMoreTweets = false;
+  //   this.tweetService
+  //     .getTweets(id)
+  //     .subscribe((twitterObject) => {
+  //       if(twitterObject.data){
+  //         this.tweetList = twitterObject.data;
+  //       }
+  //     });
+  // }
+
+  // getMoreTweets(id: string, until_id: string): void {
+  //   this.tweetService
+  //     .getMoreTweets(id, until_id)
+  //     .subscribe((twitterObject) => {
+  //       if(twitterObject.data){
+  //         this.tweetList = this.tweetList.concat(twitterObject.data);
+  //       } else {
+  //         this.noMoreTweets = true;
+  //       }
+  //     });
+  // }
+
+
+
+  // getPics(id: string): void {
+  //   this.requested = "pics";
+  //   this.noMoreTweets = false;
+  //   this.tweetService
+  //     .getTweets(id)
+  //     .subscribe((twitterObject) => {
+  //       if(twitterObject.data){
+  //         this.tweetList = twitterObject.data;
+  //       }
+  //       if(twitterObject.includes?.media){
+  //         this.mediaList = twitterObject.includes.media;
+  //       }
+  //     });
+  // }
+
+  // getMorePics(id: string, until_id: string): void {
+  //   this.tweetService
+  //     .getMoreTweets(id, until_id)
+  //     .subscribe((twitterObject) => {
+  //       if(twitterObject.data){
+  //         this.tweetList = this.tweetList.concat(twitterObject.data);
+  //       } else {
+  //         this.noMoreTweets = true;
+  //       }
+  //       if(twitterObject.includes?.media){
+  //         this.mediaList = this.mediaList.concat(twitterObject.includes.media);
+  //       }
+  //     });
+  // }
 
   toggleGrid(): void {
     this.gridToggle = !this.gridToggle;
+  }
+
+  toggleRetweets(): void {
+    this.requested = "";
+    this.tweetList = [];
+    this.mediaList = [];
+    this.noMoreTweets = false;
+    this.retweetsToggle = !this.retweetsToggle;
   }
 
   decreaseHeight(): void {
@@ -142,9 +203,9 @@ export class SearchUserComponent implements OnInit {
    if(pos == max )   {
    //Do your action here
     if (this.requested=="tweets"){
-      this.getMoreTweets(this.user.id!, this.lastTweetID()!);
+      this.getMoreData(this.user.id!, this.lastTweetID()!, "tweets", this.retweetsToggle);
     } else if (this.requested=="pics"){
-      this.getMorePics(this.user.id!, this.lastTweetID()!);
+      this.getMoreData(this.user.id!, this.lastTweetID()!, "pics", this.retweetsToggle);
     }
    }
   }

@@ -24,4 +24,5 @@ export interface MediaObject {
     media_key: string;
     type: string;
     url?: string;
+    resolution?: string;
   }

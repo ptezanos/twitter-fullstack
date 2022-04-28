@@ -52,9 +52,13 @@ public class Controller {
 	
 	@CrossOrigin
 	@GetMapping("/tweets")
-	public TweetsObject getTweets(@RequestParam String id) {
+	public TweetsObject getTweets(@RequestParam String id, @RequestParam Boolean retweets) {
 		try {
-			return twitterApi.getRecentTweets(id, getBearerToken());
+			if(retweets) {
+				return twitterApi.getRecentTweets(id, getBearerToken());
+			} else {
+				return twitterApi.getRecentTweetsNoRetweets(id, getBearerToken());
+			}
 		} catch (FeignException exception) {
 			System.out.println(exception);
 			return null;
@@ -64,14 +68,19 @@ public class Controller {
 
 	@CrossOrigin
 	@GetMapping("/moretweets")
-	public TweetsObject getMoreTweets(@RequestParam String id, @RequestParam String until_id) {
+	public TweetsObject getMoreTweets(@RequestParam String id, @RequestParam String until_id, @RequestParam Boolean retweets) {
 		try {
-			return twitterApi.getMoreTweets(id, until_id, getBearerToken());
+			if(retweets) {
+				return twitterApi.getMoreTweets(id, until_id, getBearerToken());
+			} else {
+				return twitterApi.getMoreTweetsNoRetweets(id, until_id, getBearerToken());
+			}
 		} catch (FeignException exception) {
 			System.out.println(exception);
 			return null;
 		}
 	}
+	
 	
 	@CrossOrigin
 	@GetMapping("/randomtweet")

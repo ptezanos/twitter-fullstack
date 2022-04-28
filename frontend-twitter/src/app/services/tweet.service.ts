@@ -16,18 +16,18 @@ export class TweetService {
     );
   }
 
-
-  getTweets(id: string): Observable<TwitterObject> {
+  
+  getTweets(id: string, retweets: boolean): Observable<TwitterObject> {
     return this.http.get<TwitterObject>(
-      `http://localhost:8080/tweets/?id=${id}`
+      `http://localhost:8080/tweets/?id=${id}&retweets=${retweets}`
     );
   }
 
-
-  getMoreTweets(id: string, until_id: string): Observable<TwitterObject> {
+  getMoreTweets(id: string, until_id: string, retweets: boolean): Observable<TwitterObject> {
     return this.http.get<TwitterObject>(
-      `http://localhost:8080/moretweets/?id=${id}&until_id=${until_id}`
+      `http://localhost:8080/moretweets/?id=${id}&until_id=${until_id}&retweets=${retweets}`
     );
   }
+
 
 }
